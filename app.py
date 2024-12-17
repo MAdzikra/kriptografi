@@ -1,5 +1,6 @@
 import streamlit as st
 
+# ROT13 function
 def rot13(text, mode):
     result = ""
     for char in text:
@@ -13,9 +14,10 @@ def rot13(text, mode):
             result += char
     return result if mode == "enkripsi" else result
 
+# Vigenère Cipher function
 def vigenere_cipher(text, key, mode):
     result = []
-    key = key.lower()
+    key = key.lower()  # Convert key to lowercase for simplicity
     key_index = 0
     for char in text:
         if char.isalpha():
@@ -32,28 +34,40 @@ def vigenere_cipher(text, key, mode):
             result.append(char)
     return ''.join(result)
 
+# Streamlit interface
 st.title("Aplikasi Kriptografi - Vigenere + ROT13")
 st.header("Kelompok 6 - Muhamad Rumi Rifai, Candra Wibawa, Muhammad Adzikra Dhiya Alfauzan")
 
 st.sidebar.title("Pilih Algoritma")
 algoritma = st.sidebar.selectbox("Algoritma", ["ROT13", "Vigenere Cipher"])
 
+# User input
+text = st.text_area("Masukkan teks yang akan dienkripsi/didekripsi")
+mode = st.radio("Pilih Mode", ["enkripsi", "dekripsi"])
+
 if algoritma == "ROT13":
     st.subheader("Algoritma ROT13")
-    mode = st.radio("Pilih Mode", ["enkripsi", "dekripsi"])
-    input_text = st.text_area("Masukkan Teks")
     if st.button("Proses"):
-        result_text = rot13(input_text, mode)
-        st.success(f"Hasil {mode.capitalize()}: {result_text}")
-
+        result = rot13(text, mode)
+        st.success(f"Hasil {mode.capitalize()}: {result}")
 elif algoritma == "Vigenere Cipher":
     st.subheader("Algoritma Vigenere Cipher")
-    mode = st.radio("Pilih Mode", ["enkripsi", "dekripsi"])
-    input_text = st.text_area("Masukkan Teks")
-    key = st.text_input("Masukkan Kunci")
+    key = st.text_input("Masukkan kunci untuk Vigenere Cipher")
     if st.button("Proses"):
         if not key:
             st.error("Kunci tidak boleh kosong!")
         else:
-            result_text = vigenere_cipher(input_text, key, mode)
-            st.success(f"Hasil {mode.capitalize()}: {result_text}")
+            result = vigenere_cipher(text, key, mode)
+            st.success(f"Hasil {mode.capitalize()}: {result}")
+
+# Display result
+if 'result' in locals():
+    st.subheader("Hasil Enkripsi / Dekripsi")
+
+    # Save to file button
+    st.download_button(
+        label="Simpan Hasil ke File (.txt)",
+        data=result,
+        file_name="hasil_kriptografi.txt",
+        mime="text/plain"
+    )
